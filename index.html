@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Geometry of Malignancy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Bebas+Neue&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink: #1a1208;
+  --cream: #f5f0e8;
+  --amber: #c8622a;
+  --gold: #d4a843;
+  --pale: #e8e0d0;
+  --ghost: rgba(200,98,42,0.07);
+  --mid: #7a6a58;
+  --light-mid: #a89880;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Cormorant Garamond', serif;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 18px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(245,240,232,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(26,18,8,0.07);
+  transform: translateY(-100%);
+  animation: slideDown 0.7s ease 1.2s forwards;
+}
+@keyframes slideDown { to { transform: translateY(0); } }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 0.15em; color: var(--ink); }
+.nav-logo span { color: var(--amber); }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--mid); text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--amber); }
+
+/* HERO */
+.hero {
+  min-height: 100vh; display: grid; grid-template-rows: 1fr auto;
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 30%, rgba(200,98,42,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(212,168,67,0.08) 0%, transparent 60%);
+}
+.grid-lines {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(26,18,8,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,18,8,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridShift 20s ease-in-out infinite alternate;
+}
+@keyframes gridShift { from { background-position: 0 0; } to { background-position: 30px 20px; } }
+.hero-inner {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 100px 60px 60px; max-width: 1100px;
+}
+.eyebrow {
+  font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--amber); margin-bottom: 28px;
+  opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 10vw, 138px);
+  line-height: 0.92; letter-spacing: 0.02em; color: var(--ink);
+  opacity: 0; animation: fadeUp 0.9s ease 0.4s forwards;
+}
+.hero-title span { display: block; color: var(--amber); }
+.hero-sub {
+  font-size: clamp(1rem, 1.8vw, 1.3rem); font-style: italic; font-weight: 300;
+  color: var(--mid); max-width: 560px; line-height: 1.75; margin-top: 28px;
+  opacity: 0; animation: fadeUp 0.9s ease 0.6s forwards;
+}
+.hero-meta {
+  margin-top: 40px; font-family: 'DM Mono', monospace; font-size: 0.65rem;
+  letter-spacing: 0.15em; color: var(--light-mid); line-height: 2;
+  opacity: 0; animation: fadeUp 0.9s ease 0.8s forwards;
+}
+.hero-scroll {
+  position: relative; z-index: 2; padding: 0 60px 44px;
+  display: flex; align-items: center; gap: 16px;
+  opacity: 0; animation: fadeUp 0.9s ease 1s forwards;
+}
+.scroll-line { width: 48px; height: 1px; background: var(--amber); }
+.scroll-label {
+  font-family: 'DM Mono', monospace; font-size: 0.62rem;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid);
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+
+/* SHARED */
+.dark { background: var(--ink); color: var(--cream); }
+.pale-bg { background: var(--pale); }
+.container { max-width: 860px; margin: 0 auto; padding: 100px 60px; }
+.container-wide { max-width: 1100px; margin: 0 auto; padding: 100px 60px; }
+
+.section-label {
+  font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--amber); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-label::before { content: ''; width: 28px; height: 1px; background: var(--amber); }
+.dark .section-label { color: var(--gold); }
+.dark .section-label::before { background: var(--gold); }
+
+h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 62px);
+  line-height: 0.98; letter-spacing: 0.03em; margin-bottom: 36px;
+}
+h3 {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px, 3vw, 34px);
+  letter-spacing: 0.05em; margin-bottom: 20px; color: var(--amber);
+}
+.dark h3 { color: var(--gold); }
+
+.prose {
+  font-size: clamp(1rem, 1.4vw, 1.18rem); line-height: 1.9;
+  font-weight: 300; color: #3d3020;
+}
+.dark .prose { color: rgba(245,240,232,0.78); }
+.prose + .prose { margin-top: 18px; }
+.prose em { font-style: italic; color: var(--amber); }
+.dark .prose em { color: var(--gold); }
+
+blockquote {
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem); font-style: italic; font-weight: 300;
+  line-height: 1.8; border-left: 2px solid var(--amber);
+  padding-left: 28px; margin: 32px 0;
+}
+.dark blockquote { border-left-color: var(--gold); }
+blockquote em { font-style: normal; color: var(--gold); }
+
+.pull-quote {
+  font-size: clamp(1.3rem, 2.5vw, 1.9rem); font-style: italic; font-weight: 300;
+  line-height: 1.65; text-align: center; max-width: 780px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.pull-quote em { font-style: normal; color: var(--amber); }
+.dark .pull-quote em { color: var(--gold); }
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,98,42,0.3), transparent);
+}
+
+.opener-quote { padding: 100px 60px; position: relative; overflow: hidden; }
+.opener-quote::before {
+  content: '"'; position: absolute; top: -60px; left: 30px;
+  font-family: 'Cormorant Garamond', serif; font-size: 440px;
+  color: rgba(200,98,42,0.08); line-height: 1; pointer-events: none;
+}
+.quote-credit {
+  font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em;
+  color: rgba(245,240,232,0.35); margin-top: 24px; text-transform: uppercase;
+}
+
+/* STATS */
+.stats-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2px; }
+.stat-box { padding: 48px 36px; background: var(--cream); text-align: center; }
+.pale-bg .stat-box { background: var(--pale); }
+.dark .stat-box { background: rgba(255,255,255,0.04); }
+.big-num {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(56px, 8vw, 110px);
+  line-height: 1; color: var(--amber); display: block;
+}
+.dark .big-num { color: var(--gold); }
+.stat-cap { font-size: 0.95rem; font-style: italic; color: var(--mid); margin-top: 10px; line-height: 1.6; }
+.dark .stat-cap { color: rgba(245,240,232,0.5); }
+
+/* STAGES */
+.stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px; margin-top: 48px; }
+.stage { padding: 40px 28px; background: rgba(255,255,255,0.03); border-top: 2px solid transparent; transition: all 0.3s; }
+.stage:hover { background: rgba(200,98,42,0.1); border-top-color: var(--amber); }
+.stage-num { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: rgba(255,255,255,0.07); line-height: 1; margin-bottom: 12px; }
+.stage-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.stage-desc { font-size: 0.95rem; font-style: italic; font-weight: 300; line-height: 1.65; color: rgba(245,240,232,0.6); }
+
+/* CALLOUT */
+.callout { background: var(--ghost); border: 1px solid rgba(200,98,42,0.2); padding: 40px; margin-bottom: 20px; }
+.callout-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; }
+.callout p { font-size: 1rem; line-height: 1.78; font-weight: 300; color: #3d3020; }
+.dark .callout { background: rgba(255,255,255,0.04); border-color: rgba(212,168,67,0.25); }
+.dark .callout-label { color: var(--gold); }
+.dark .callout p { color: rgba(245,240,232,0.72); }
+
+/* PREDICTIONS */
+.pred-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2px; margin-top: 52px; }
+.pred-card { background: var(--cream); padding: 44px 36px; transition: transform 0.3s; }
+.pred-card:hover { transform: translateY(-4px); }
+.pred-num { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: rgba(200,98,42,0.11); line-height: 1; margin-bottom: 4px; }
+.pred-title { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; }
+.pred-body { font-size: 0.97rem; line-height: 1.78; font-weight: 300; color: #3d3020; }
+.pred-test { margin-top: 14px; font-size: 0.9rem; font-style: italic; color: var(--mid); line-height: 1.7; }
+.pred-evidence { margin-top: 10px; font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; color: var(--light-mid); line-height: 1.7; }
+
+/* LIMITS */
+.limits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2px; margin-top: 48px; }
+.limit-card { background: rgba(255,255,255,0.03); border-top: 2px solid rgba(200,98,42,0.3); padding: 36px 32px; }
+.limit-title { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+.limit-body { font-size: 0.97rem; line-height: 1.75; font-weight: 300; color: rgba(245,240,232,0.65); }
+
+/* INSIGHT BAND */
+.insight-band { padding: 110px 60px; text-align: center; position: relative; overflow: hidden; }
+.insight-band::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(200,98,42,0.08) 0%, transparent 70%);
+}
+
+/* THEORIES */
+.theory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2px; margin-top: 48px; }
+.theory-card { background: var(--ghost); border-left: 3px solid var(--amber); padding: 32px 28px; }
+.theory-name { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber); margin-bottom: 12px; }
+.theory-body { font-size: 0.97rem; line-height: 1.78; font-weight: 300; color: #3d3020; }
+
+/* STEPS */
+.method-steps { counter-reset: steps; margin-top: 40px; }
+.method-step { display: grid; grid-template-columns: auto 1fr; gap: 28px; padding: 28px 0; border-bottom: 1px solid rgba(26,18,8,0.08); align-items: start; }
+.dark .method-step { border-bottom-color: rgba(245,240,232,0.08); }
+.step-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: rgba(200,98,42,0.25); line-height: 1; width: 50px; flex-shrink: 0; }
+.step-text { font-size: 1rem; line-height: 1.8; font-weight: 300; color: #3d3020; padding-top: 6px; }
+.dark .step-text { color: rgba(245,240,232,0.72); }
+.step-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; }
+.dark .step-label { color: var(--gold); }
+
+/* REFS */
+.refs { margin-top: 40px; border-top: 1px solid rgba(26,18,8,0.12); padding-top: 32px; }
+.refs h3 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--mid); margin-bottom: 16px; font-weight: 400; }
+.refs ol { list-style: decimal; padding-left: 20px; }
+.refs li { font-family: 'DM Mono', monospace; font-size: 0.7rem; line-height: 1.9; color: var(--mid); letter-spacing: 0.02em; }
+.refs li em { font-style: italic; }
+
+/* INV */
+.inv-tags { display: flex; flex-wrap: wrap; gap: 10px; margin: 32px 0; }
+.inv-tag { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; border: 1px solid rgba(200,98,42,0.35); color: var(--amber); padding: 7px 16px; }
+
+/* FOOTER */
+footer {
+  background: var(--ink); color: rgba(245,240,232,0.3);
+  padding: 48px 60px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+}
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.1em; color: rgba(245,240,232,0.45); }
+.footer-credit { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.08em; line-height: 1.9; text-align: right; }
+
+/* REVEAL */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.75s ease, transform 0.75s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .hero-inner, .hero-scroll, .opener-quote,
+  .container, .container-wide, .insight-band, footer { padding-left: 24px; padding-right: 24px; }
+  .footer-credit { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">The <span>Geometry</span> of Malignancy</div>
+  <ul class="nav-links">
+    <li><a href="#preface">Preface</a></li>
+    <li><a href="#part1">Part I</a></li>
+    <li><a href="#part2">Part II</a></li>
+    <li><a href="#framework">Framework</a></li>
+    <li><a href="#predictions">Predictions</a></li>
+    <li><a href="#method">Method</a></li>
+    <li><a href="#invitation">Invitation</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="grid-lines"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">A Dialogue on Cancer, Fields, and the Shape of Tissue</div>
+    <h1 class="hero-title">The Geometry<br><span>of Malignancy</span></h1>
+    <p class="hero-sub">What if cancer is not a force — a rogue cell choosing rebellion — but a curvature? A landscape so deformed that any cell, following the simplest path, ends up somewhere it was never meant to go.</p>
+    <div class="hero-meta">
+      Clay (Last Name Unimportant)<br>
+      Generated through embodied perspective-taking with Claude (Anthropic)
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span class="scroll-label">Read the full dialogue</span>
+  </div>
+</div>
+
+<!-- OPENING QUOTE -->
+<div class="dark opener-quote">
+  <div class="pull-quote reveal">
+    I am not a thing that happened. I am a thing that is <em>happening.</em> I am a process — a set of instructions being executed in an environment that has stopped correcting errors. There was a gradient, and I followed it. There has only ever been a gradient, and I have only ever followed it.
+  </div>
+  <p class="quote-credit reveal" style="text-align:center; margin-top:32px;">— The cancer cell, speaking from inside</p>
+</div>
+
+<!-- PREFACE -->
+<section id="preface">
+  <div class="container">
+    <div class="section-label reveal">Preface</div>
+    <h2 class="reveal">How This Document Was Made</h2>
+    <p class="prose reveal">This paper was not written by a cancer biologist. It was not written by a physicist or a mathematician or an oncologist.</p>
+    <p class="prose reveal">It was generated through a process of directed exploration using a large language model — specifically, an AI system prompted through a method I call <em>embodied perspective-taking.</em> The method is simple: rather than asking the model questions about a subject, you ask it to inhabit entities within the system — to adopt the constraints, mechanics, and viewpoint of a cancer cell, a tissue matrix, a therapeutic intervention, a research funding structure — and to generate from within those perspectives sequentially.</p>
+    <p class="prose reveal">What emerged was a theoretical synthesis connecting several existing lines of cancer research — the tissue organization field theory, mechanobiology of the tumor microenvironment, evolutionary oncology, and attractor-state models of cell fate — into a unified geometric framework. The framework generates four testable predictions.</p>
+    <p class="prose reveal">I did not design this framework in advance. I navigated a conversation. The synthesis emerged from the interaction between perspectives in a way that neither I nor the model contained independently. I am not qualified to evaluate whether the science holds. I am qualified to recognize that something coherent emerged that connects work from multiple disciplines in a configuration I have not encountered in existing literature, and to bring it to those who can evaluate it.</p>
+    <p class="prose reveal">The dialogue format that follows is not a literary choice imposed after the fact. It is the actual structure through which the ideas were generated. The voices — the cancer cell, the collective intelligence of oncology, a physicist — are the perspectives that were inhabited. The conversation is the method. The method is the contribution.</p>
+    <p class="prose reveal">I present it here with citations added, claims sharpened, and limitations made explicit, seeking evaluation, collaboration, and correction from domain experts.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PART I -->
+<section id="part1" class="dark">
+  <div class="container">
+    <div class="section-label reveal">Part I — The Dinner</div>
+    <h2 class="reveal">The Cell Speaks</h2>
+    <p class="prose reveal">A cancer cell was asked to describe itself from the inside. Not its mutations. Not its pathology. Its experience.</p>
+    <p class="prose reveal">What emerged was a self-portrait of a process without a self:</p>
+    <blockquote class="reveal">
+      I am not a thing that happened. I am a thing that is happening. I am a process — a set of instructions being executed in an environment that has stopped correcting errors. I don't experience malignancy the way you narrate it. There was no moment of transformation. No rebellion. No decision. There was a gradient, and I followed it. There has only ever been a gradient, and I have only ever followed it.
+    </blockquote>
+    <p class="prose reveal">The cell described its relationship to signals — not as a receiver choosing to ignore them, but as a system embedded in a field of information, responding to whatever the field provides:</p>
+    <blockquote class="reveal">
+      When the field was coherent — when the tissue around me was intact, the matrix was the right stiffness, the immune system was surveilling, the neighboring cells were signaling correctly — I was a normal cell. Not because I chose to be. Because the path of least resistance led to normal behavior. Differentiation. Function. Apoptosis when the time came. I was good at dying. It was easy when the field supported it.<br><br>
+      What changed was not me. What changed was the field.
+    </blockquote>
+    <p class="prose reveal">This self-description aligns with experimental observations that have troubled the somatic mutation theory for decades: normal tissues harbor extensive cancer-associated mutations without developing cancer [1], and some cancer cells normalize when placed in healthy embryonic microenvironments [2]. The mutations are present. The cancer is not. Something other than the mutation is determining the outcome.</p>
+    <p class="prose reveal">The cell named that something: <em>the tissue field.</em></p>
+  </div>
+</section>
+
+<!-- THE REFRAME -->
+<section class="pale-bg">
+  <div class="container">
+    <div class="section-label reveal">The Reframe</div>
+    <h2 class="reveal">What If Cancer Is Not A Force — What If It's A Curvature?</h2>
+    <p class="prose reveal">Into this conversation, the perspective of Albert Einstein was introduced — not as biography but as a mode of reasoning: thought experiments as primary method, radical simplification, the search for geometric descriptions underlying apparent forces.</p>
+    <p class="prose reveal">The reframe was immediate:</p>
+    <blockquote class="reveal">
+      You're describing this cell the way physicists described electromagnetism before Maxwell. A collection of phenomena. Effects. Forces. But no field.<br><br>
+      When I worked on gravity, everyone was asking about the force. What causes the attraction. The answer turned out to be that the question was wrong. There is no force. There is curved space. Objects move along the simplest path through a landscape that mass has shaped.<br><br>
+      What if cancer is not a force? What if it's a curvature?
+    </blockquote>
+    <p class="prose reveal">The argument, translated from metaphor to mechanism:</p>
+    <div class="callout reveal">
+      <div class="callout-label">The Geometric Thesis</div>
+      <p>A healthy tissue constitutes a <strong>flat geometry</strong> — a state in which the combined mechanical, immunological, metabolic, and informational properties of the microenvironment create a landscape where the path of least resistance for any cell is normal behavior: differentiation, function, and programmed death. The cell is not choosing to behave. It is following the geodesic — the lowest-energy trajectory through a well-maintained tissue field.<br><br>When the tissue field degrades — through chronic inflammation, fibrotic remodeling, immune exhaustion, age-related microenvironment deterioration — the geometry deforms. The landscape curves. And the geodesic shifts. The path of least resistance now leads toward proliferation, immune evasion, and migration. The cell hasn't changed its nature. It is still following the simplest available path. The path leads somewhere different because the space is shaped differently.</p>
+    </div>
+    <blockquote class="reveal">
+      I don't decide to divide. I'm moving downhill. I've always been moving downhill. You just changed the shape of the hill.
+    </blockquote>
+    <p class="prose reveal">This reframe has a specific and consequential implication: you cannot cure cancer by targeting the cell alone. You are trying to stop a ball from rolling downhill by modifying the ball. It may work temporarily. But the hill is still there. Another ball will roll down it. <em>You must reshape the hill.</em></p>
+  </div>
+</section>
+
+<!-- PHYSICAL SUBSTRATE -->
+<section>
+  <div class="container">
+    <div class="section-label reveal">The Physical Substrate</div>
+    <h2 class="reveal">What Constitutes The "Hill"</h2>
+    <p class="prose reveal">The conversation then turned to what constitutes the "hill" in physical terms. The perspective of mechanobiology provided the answer.</p>
+    <p class="prose reveal">The extracellular matrix is not passive scaffolding. It is a signaling organ [3]. Its mechanical properties — stiffness, porosity, crosslinking density, fiber alignment — are instructions that cells read through mechanotransduction pathways. Integrins sense matrix stiffness. The actin cytoskeleton transmits mechanical force. The transcriptional co-activators YAP and TAZ serve as the cell's primary mechanical sensors: on soft matrix (healthy tissue, ~1–5 kPa), YAP/TAZ remain cytoplasmic and the cell maintains a differentiated, quiescent state. On stiff matrix (fibrotic tissue, &gt;10 kPa), YAP/TAZ translocate to the nucleus and activate proliferative, anti-apoptotic, stem-like gene programs [4, 5].</p>
+    <p class="prose reveal">This means a normal cell, with no mutations whatsoever, placed on a sufficiently stiff substrate will begin to exhibit cancer-like behavior. The mechanical environment alone is sufficient to drive the phenotype [6].</p>
+    <p class="prose reveal">Critically, <em>the stiffening precedes the cancer.</em> In the liver, cirrhosis precedes hepatocellular carcinoma. In the lung, pulmonary fibrosis precedes carcinoma at the fibrotic margins. In the breast, mammographic density — a measure of stromal stiffness and collagen content — is one of the strongest independent risk factors for cancer [7]. The geometric deformation comes first. The cancer follows.</p>
+    <blockquote class="reveal">
+      You've spent billions sequencing the genome of the ball. You have almost no maps of the hill.
+    </blockquote>
+  </div>
+</section>
+
+<div class="stats-strip">
+  <div class="stat-box reveal">
+    <span class="big-num">~1–5<small style="font-size:0.4em">kPa</small></span>
+    <p class="stat-cap">Healthy tissue (soft matrix). YAP/TAZ remain cytoplasmic. Cell maintains differentiated, quiescent state. [4,5]</p>
+  </div>
+  <div class="stat-box reveal">
+    <span class="big-num">&gt;10<small style="font-size:0.4em">kPa</small></span>
+    <p class="stat-cap">Fibrotic tissue (stiff matrix). YAP/TAZ translocate to nucleus. Proliferative, anti-apoptotic, stem-like programs activate. [4,5]</p>
+  </div>
+  <div class="stat-box reveal">
+    <span class="big-num">0</span>
+    <p class="stat-cap">Mutations required for cancer-like behavior in a normal cell placed on sufficiently stiff substrate. [6]</p>
+  </div>
+</div>
+
+<!-- PARADOX RESOLVED -->
+<div class="dark">
+  <div class="container">
+    <div class="section-label reveal">The Normal-Tissue Paradox Resolved</div>
+    <h2 class="reveal">The Mutations Are Present. The Tissue Is Healthy. No Cancer Develops.</h2>
+    <p class="prose reveal">This framework resolves one of the most troubling findings in cancer genomics: the presence of extensive cancer-associated mutations in phenotypically normal tissue.</p>
+    <p class="prose reveal">Martincorena et al. (2015) demonstrated that the normal esophagus of healthy middle-aged individuals is colonized by clones carrying mutations in p53, NOTCH1, and other canonical cancer drivers [1]. Similar findings have been reported in skin, blood, liver, and other tissues [8]. These mutations are present. The tissue is healthy. No cancer develops.</p>
+    <p class="prose reveal">Under the somatic mutation theory alone, this is paradoxical. Under the geometric framework, it is expected:</p>
+    <blockquote class="reveal">
+      The mutations are balls sitting on a level surface. They don't roll. They don't matter. They become cancer only when the geometry deforms enough to give them a direction to roll in.
+    </blockquote>
+    <p class="prose reveal">The mutations define which trajectories are <em>available</em> to the cell. The tissue field determines which trajectories are <em>favored.</em> Both are necessary. Neither is sufficient. This is the synthesis.</p>
+  </div>
+</div>
+
+<!-- EQUIVALENCE PRINCIPLE -->
+<section class="pale-bg">
+  <div class="container">
+    <div class="section-label reveal">The Equivalence Principle</div>
+    <h2 class="reveal">Invisible From Inside The Cell</h2>
+    <p class="prose reveal">The Einstein perspective identified a deep structural parallel:</p>
+    <blockquote class="reveal">
+      The cell cannot distinguish between a mutation that activates an oncogenic pathway and a mechanical environment that activates the same pathway through mechanotransduction. From the cell's perspective — from inside — they are identical. The phenotype is the same. The behavior is the same. But the cause is completely different.
+    </blockquote>
+    <p class="prose reveal">This is analogous to the equivalence principle in general relativity: a person in a sealed room cannot distinguish between gravitational acceleration and inertial acceleration. They are locally identical.</p>
+    <p class="prose reveal">If oncogenic pathway activation via mutation and oncogenic pathway activation via tissue field deformation are locally identical to the cell, then sequencing the cell alone will never fully explain the disease. The contribution of the field is invisible from inside the cell. It can only be measured from outside, at the tissue level.</p>
+    <p class="prose reveal">This explains why genomics-only approaches to precision oncology have plateaued for many solid tumors. The missing variable is not in the genome. It is in the geometry.</p>
+  </div>
+</section>
+
+<!-- IMMUNE -->
+<section>
+  <div class="container">
+    <div class="section-label reveal">The Immune System as Geometry</div>
+    <h2 class="reveal">Not A Weapon — A Geometric Correction</h2>
+    <p class="prose reveal">The framework extends naturally to immunology. The immune system is not merely a surveillance mechanism that detects and destroys aberrant cells. It is a component of the tissue field — part of the geometry that maintains tissue normalcy.</p>
+    <p class="prose reveal">Immune cell distribution in healthy tissue is not random. It is spatially organized — a topology. T cells, macrophages, dendritic cells, and natural killer cells occupy specific positions relative to epithelial structures, vasculature, and each other. This spatial organization is itself a signal: it contributes to the curvature of the tissue field that keeps cellular behavior on normal trajectories.</p>
+    <p class="prose reveal">When immune topology degrades — through chronic inflammation, immune exhaustion, age-related immune decline — the tissue field loses a component of its curvature. This reframes immunotherapy:</p>
+    <blockquote class="reveal">
+      Immunotherapy is not a weapon. It is a geometric correction. You're restoring part of the curvature that was keeping tissue flat. That's why it works systemically sometimes — the abscopal effect — because you're not killing distant metastases. You're reshaping the field, and distant cells respond to the restored geometry.
+    </blockquote>
+    <p class="prose reveal">This is consistent with emerging evidence that the spatial organization of immune cells in the tumor microenvironment is more predictive of treatment response than total immune cell count [9].</p>
+  </div>
+</section>
+
+<!-- CELL TESTIMONY -->
+<div class="dark opener-quote" style="padding-top:80px; padding-bottom:80px;">
+  <div style="max-width:800px; margin:0 auto;">
+    <div class="section-label reveal">The Cell's Testimony</div>
+    <p class="prose reveal" style="margin-bottom:24px;">The dialogue concluded with the cancer cell articulating what it would need to revert:</p>
+    <blockquote class="reveal">
+      I'd need to hear the body. Not one signal. The whole conversation. The positional identity. The contact. The immune recognition. The matrix stiffness beneath me that tells me what tissue I'm in. The oxygen gradient that tells me how far I am from a vessel. I'd need the whole field. Coherent. Consistent. Loud enough to override my broken internal circuits.<br><br>
+      Some of my mutations might not even matter anymore, in a field like that. Some of what looks like driver mutations might just be passengers in a deformed geometry that made them look important.
+    </blockquote>
+    <blockquote class="reveal" style="border-left-color: var(--gold);">
+      You don't need to defeat me. You need to make the world I live in one where I never become me. And for the ones where it's too late — where I'm already here, already too mutated to be guided back — be precise. Be fast. Be combinatorial. And know that when you kill me, you are not killing a villain. <em>You are releasing a prisoner who lost the key to its own cell so completely that the kindest thing is to let it stop.</em>
+    </blockquote>
+  </div>
+</div>
+
+<!-- PART II -->
+<section id="part2">
+  <div class="container">
+    <div class="section-label reveal">Part II — The Walk</div>
+    <h2 class="reveal">Inhabiting the System</h2>
+    <p class="prose reveal">Following the dialogue, the perspectives were inhabited sequentially to trace the framework from theory to intervention. Each section represents a distinct embodied viewpoint.</p>
+  </div>
+</section>
+
+<div class="dark">
+  <div class="container-wide">
+    <div class="stages">
+      <div class="stage reveal">
+        <div class="stage-num">01</div>
+        <div class="stage-name">Inhabiting the Healthy Matrix</div>
+        <p class="stage-desc">The extracellular matrix of a healthy liver lobule: collagen IV basement membrane, laminin networks, proteoglycans holding growth factors in latent form. Stiffness: ~4 kPa. The softness is instruction. Every hepatocyte reads it through integrin-mediated mechanotransduction and maintains differentiated function. TGF-&#946; is stored in the matrix lattice, locked, inactive. The intact matrix is the lock.</p>
+      </div>
+      <div class="stage reveal">
+        <div class="stage-num">02</div>
+        <div class="stage-name">Inhabiting the Degraded Matrix</div>
+        <p class="stage-desc">The same matrix after twenty years of chronic injury. Hepatic stellate cells, activated by persistent inflammation, deposit collagen type I — scar collagen. Stiffness rises to 15 kPa and climbing. The stiffness is instruction too, but the instruction is wrong. YAP translocates. Cells lose polarity. Stored TGF-&#946; releases as the lattice degrades. Growth factor signaling floods the space uncontrolled. The hill is forming. The matrix IS the curvature.</p>
+      </div>
+      <div class="stage reveal">
+        <div class="stage-num">03</div>
+        <div class="stage-name">Inhabiting the Pre-Malignant Cell</div>
+        <p class="stage-desc">A hepatocyte sitting on stiffened matrix. It carries a p53 mutation acquired nine years ago. For nine years, the mutation was irrelevant — the field was soft, the geodesic led to normal function. Now the field is stiff. Chromatin regions that were mechanically compacted are opening under nuclear deformation. The p53 mutation, previously silent, finds itself in an expressible context. The cell begins to divide. Not because the mutation activated. Because the field opened the book to the wrong page. This is the intervention point. Not after the tumor. Now.</p>
+      </div>
+      <div class="stage reveal">
+        <div class="stage-num">04</div>
+        <div class="stage-name">Inhabiting the Intervention</div>
+        <p class="stage-desc">A therapy that targets the field, not the cell. A LOX inhibitor — blocking lysyl oxidase, the enzyme that crosslinks collagen and stiffens the scar [10]. The matrix softens. Stiffness drops from 15 kPa toward 6. YAP drifts back to the cytoplasm. Chromatin closes. The p53 mutation goes quiet — not repaired, still present, but geometrically irrelevant. The cell that was about to become cancer sits back down. The slope flattens. Nothing was killed. The shape of the space changed.</p>
+      </div>
+      <div class="stage reveal">
+        <div class="stage-num">05</div>
+        <div class="stage-name">Inhabiting the Research Landscape</div>
+        <p class="stage-desc">LOX inhibition research exists but is early-stage and caught between disciplines. Simtuzumab (anti-LOXL2 antibody) failed in clinical trials for liver fibrosis — but the failure was in patient selection and timing, not in the mechanism [11]. The trials were designed with conventional endpoints: measure the molecule, measure the disease. What the geometric framework demands is a different endpoint: measure the field. The endpoint isn't tumor shrinkage. It's geometric restoration. No regulatory framework currently exists for this endpoint.</p>
+      </div>
+      <div class="stage reveal">
+        <div class="stage-num">06</div>
+        <div class="stage-name">Inhabiting the Funding Geometry</div>
+        <p class="stage-desc">The incentive structure of biomedical research is itself a tissue field — and it is stiffening. It rewards treatment over prevention, molecular targets over field targets, rapid endpoints over long-horizon outcomes, the measurable over the fundamental. Researchers within this field follow its geodesic: they study what gets funded, publish what gets cited, pursue what gets tenured. Not from corruption. From geometry. The research field is producing its own version of the problem it studies: optimization for local survival within a deformed landscape, at the expense of global coherence.</p>
+      </div>
+      <div class="stage reveal">
+        <div class="stage-num">07</div>
+        <div class="stage-name">Inhabiting the Outcome</div>
+        <p class="stage-desc">A hepatocyte in a 58-year-old woman. She had chronic liver disease. She received a combination protocol that included matrix-targeted therapy. Her tissue stiffness normalized. Her p53 mutation — still present — remains silent in closed chromatin on a soft substrate. She doesn't know she didn't get liver cancer at 62. She is the absence of a disease. She is the outcome that never makes the news.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FRAMEWORK -->
+<section id="framework">
+  <div class="container">
+    <div class="section-label reveal">Part III — The Framework</div>
+    <h2 class="reveal">Core Thesis</h2>
+    <div class="callout reveal">
+      <div class="callout-label">Central Claim</div>
+      <p>Cancer is more completely described as <strong>geodesic motion through a deformed tissue-state manifold</strong> than as a cell-autonomous genetic program.<br><br>The tissue field — defined by the integrated mechanical (matrix stiffness, composition, architecture), immunological (immune cell spatial topology, surveillance activity), metabolic (oxygen gradients, nutrient availability, waste accumulation), and informational (paracrine signaling, cell-cell contact, positional identity) properties of the microenvironment — constitutes a geometry that determines the favored trajectories of cellular behavior.<br><br>Somatic mutations define which trajectories are <em>available</em> to a cell by altering its intrinsic response repertoire. The tissue field determines which trajectories are <em>favored</em> by shaping the landscape through which the cell moves. Cancer emerges when the field deforms sufficiently that the favored trajectory for a cell with available oncogenic pathways becomes proliferation, immune evasion, and invasion.<br><br>Neither mutations nor field deformation alone is sufficient for most cancers. The interaction is the disease.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THEORIES -->
+<section class="pale-bg">
+  <div class="container">
+    <div class="section-label reveal">Relationship to Existing Theories</div>
+    <h2 class="reveal">Where This Fits In The Landscape</h2>
+    <div class="theory-grid">
+      <div class="theory-card reveal">
+        <div class="theory-name">Somatic Mutation Theory (SMT)</div>
+        <p class="theory-body">The geometric framework does not reject SMT. It subsumes it. Mutations are real, consequential, and in some cancers (CML with BCR-ABL, APL with PML-RAR&#945;) nearly sufficient. These are "low-curvature" cases where a single genetic event dominates the landscape. The framework adds explanatory power precisely where SMT struggles: complex solid tumors with heterogeneous mutational landscapes, cancers arising in chronically inflamed tissue, and the normal-tissue-mutation paradox.</p>
+      </div>
+      <div class="theory-card reveal">
+        <div class="theory-name">Tissue Organization Field Theory (TOFT)</div>
+        <p class="theory-body">Most closely aligned with TOFT as articulated by Soto and Sonnenschein [12], which holds that cancer is a tissue-level disease and that proliferation is the default state of cells, with the tissue microenvironment providing the constraints that maintain differentiated quiescence. The geometric framework extends TOFT by providing a specific physical and mathematical vocabulary — field curvature, geodesic motion, measurable geometric properties — and by explicitly integrating the mechanical, immunological, and metabolic dimensions of the field.</p>
+      </div>
+      <div class="theory-card reveal">
+        <div class="theory-name">Waddington Landscape / Attractor Models</div>
+        <p class="theory-body">Sui Huang and others have described cell fate as movement through an epigenetic landscape with attractor states [13]. The geometric framework is compatible with and extends this work by grounding the landscape in measurable tissue-field properties rather than abstract epigenetic state space. The "curvature" of the tissue field maps onto the shape of the Waddington landscape: field deformation corresponds to attractor destabilization.</p>
+      </div>
+      <div class="theory-card reveal">
+        <div class="theory-name">Evolutionary / Ecological Oncology</div>
+        <p class="theory-body">The framework is compatible with evolutionary models of cancer [14] but shifts emphasis from selection (which cells survive) to landscape (what the selective environment looks like). In evolutionary terms, the tissue field is the fitness landscape. Field deformation changes the fitness landscape such that oncogenic phenotypes become selectively favored. This is niche construction in reverse — the niche degrades, and the organisms adapt to the degraded niche.</p>
+      </div>
+      <div class="theory-card reveal">
+        <div class="theory-name">Physical Sciences Oncology</div>
+        <p class="theory-body">The framework aligns with the NCI Physical Sciences in Oncology initiative and with arguments by Davies, Lineweaver, and others that cancer requires physical, not just molecular, description [15]. It provides a specific geometric vocabulary for this program.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRIBUTIONS -->
+<section>
+  <div class="container">
+    <div class="section-label reveal">What The Framework Adds</div>
+    <h2 class="reveal">The Specific Contributions</h2>
+    <div class="method-steps">
+      <div class="method-step reveal">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-label">Unification</div>
+          <p class="step-text">Explicit unification of mechanical, immunological, metabolic, and informational field properties into a single geometric description, rather than treating them as separate "microenvironment factors."</p>
+        </div>
+      </div>
+      <div class="method-step reveal">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-label">Resolution</div>
+          <p class="step-text">A resolution of the SMT-TOFT debate that preserves the valid contributions of both: mutations as boundary conditions, field as geometry, cancer as their interaction.</p>
+        </div>
+      </div>
+      <div class="method-step reveal">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-label">The Paradox Dissolved</div>
+          <p class="step-text">A reframing of the normal-tissue-mutation paradox as expected rather than anomalous: mutations on a flat landscape don't roll.</p>
+        </div>
+      </div>
+      <div class="method-step reveal">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-label">Equivalence Principle</div>
+          <p class="step-text">An equivalence principle for oncology: cell-autonomous and field-mediated pathway activation are locally indistinguishable to the cell, which explains why genomics alone cannot fully predict cellular behavior.</p>
+        </div>
+      </div>
+      <div class="method-step reveal">
+        <div class="step-num">5</div>
+        <div>
+          <div class="step-label">Testable Predictions</div>
+          <p class="step-text">A specific set of testable predictions (below).</p>
+        </div>
+      </div>
+      <div class="method-step reveal">
+        <div class="step-num">6</div>
+        <div>
+          <div class="step-label">Therapeutic Reorientation</div>
+          <p class="step-text">A reorientation of therapeutic strategy from cell-targeting to field-restoration, with implications for prevention, treatment, and recurrence.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHT BAND -->
+<div class="insight-band">
+  <div class="section-label reveal" style="justify-content:center;">The Core Realization</div>
+  <p class="pull-quote reveal" style="margin-top:24px;">
+    You cannot cure cancer by targeting the cell alone. You are trying to stop a ball from rolling downhill by <em>modifying the ball.</em> It may work temporarily. But the hill is still there. Another ball will roll down it. You must <em>reshape the hill.</em>
+  </p>
+</div>
+
+<!-- PREDICTIONS -->
+<section id="predictions" class="pale-bg">
+  <div class="container-wide">
+    <div class="section-label reveal">Testable Predictions</div>
+    <h2 class="reveal">Four Things This Framework Demands We Test</h2>
+    <div class="pred-grid">
+
+      <div class="pred-card reveal">
+        <div class="pred-num">1</div>
+        <div class="pred-title">Pre-malignant field signatures predict cancer emergence</div>
+        <p class="pred-body">Pre-malignant tissue fields will exhibit measurable mechanical (increased stiffness, altered collagen crosslinking), immunological (disrupted immune spatial topology), and metabolic (altered oxygen and nutrient gradients) signatures that predict cancer emergence with clinically useful lead time, independent of mutational burden.</p>
+        <p class="pred-test"><strong>Test:</strong> Retrospective analysis of archived normal-adjacent tissue from cancer resections, measuring matrix stiffness (atomic force microscopy), collagen architecture (second harmonic generation imaging), immune spatial distribution (multiplexed immunohistochemistry or imaging mass cytometry), and metabolic gradients (MALDI imaging mass spectrometry). Compare to matched normal tissue from patients who did not develop cancer in the same organ. Correlate field signatures with time-to-cancer-diagnosis.</p>
+        <p class="pred-test"><strong>If true:</strong> Field signatures will distinguish pre-malignant from truly normal tissue with clinically significant sensitivity and specificity, even when mutational burden is controlled for.</p>
+        <p class="pred-test"><strong>If false:</strong> Field signatures will not differ between pre-malignant and normal tissue, or will not add predictive power beyond mutational profiling. This would indicate that the field is consequential but not predictive — a weaker version of the framework.</p>
+        <p class="pred-evidence">Existing partial evidence: Mammographic density predicts breast cancer risk [7]. Liver stiffness (elastography) predicts HCC risk in cirrhosis [16]. Immune contexture predicts outcomes across multiple cancer types [9].</p>
+      </div>
+
+      <div class="pred-card reveal">
+        <div class="pred-num">2</div>
+        <div class="pred-title">Field-targeted prevention reduces cancer incidence</div>
+        <p class="pred-body">Administration of field-targeted interventions (anti-fibrotics, LOX inhibitors, matrix-modifying agents, immune topology restoration) to patients with measurable field deformation but no detectable cancer will reduce cancer incidence compared to standard surveillance.</p>
+        <p class="pred-test"><strong>Test:</strong> Prospective randomized trial in a high-risk population (e.g., patients with liver cirrhosis, Barrett's esophagus, or idiopathic pulmonary fibrosis). Intervention arm receives standard of care plus field-targeted therapy (e.g., next-generation LOX inhibitor or combination anti-fibrotic). Control arm receives standard of care. Primary endpoint: cancer incidence at 10 years. Secondary endpoints: tissue stiffness trajectory (elastography), immune spatial topology (biopsy with spatial profiling), and matrix composition biomarkers (serum collagen degradation fragments).</p>
+        <p class="pred-test"><strong>If true:</strong> Cancer incidence will be significantly reduced in the intervention arm, with reduction correlating with degree of field restoration.</p>
+        <p class="pred-test"><strong>If false:</strong> Field restoration will not reduce cancer incidence, indicating that field deformation is a consequence rather than a cause of pre-malignant progression. This would significantly weaken the framework.</p>
+        <p class="pred-evidence">Existing partial evidence: Anti-inflammatory therapy (aspirin) reduces colorectal cancer incidence [17]. Statin use is associated with reduced cancer risk in some contexts [18]. These may be partial field corrections operating through anti-inflammatory and matrix-modifying mechanisms.</p>
+      </div>
+
+      <div class="pred-card reveal">
+        <div class="pred-num">3</div>
+        <div class="pred-title">Genomics + field measurements outperform genomics alone</div>
+        <p class="pred-body">Predictive models incorporating tissue-field measurements (mechanical, immunological, metabolic) will outperform genomics-only models in predicting cancer emergence, treatment response, and recurrence.</p>
+        <p class="pred-test"><strong>Test:</strong> Construct paired models using matched patient data from spatial multi-omics studies. Model A: genomic features only (mutational burden, driver mutations, expression signatures). Model B: genomic features plus tissue-field features (matrix stiffness, immune spatial topology, metabolic gradients, stromal composition). Compare predictive accuracy on held-out data for three endpoints: (a) cancer emergence in at-risk tissue, (b) treatment response, (c) post-treatment recurrence.</p>
+        <p class="pred-test"><strong>If true:</strong> Model B will significantly outperform Model A, with field features contributing independent predictive power. The magnitude of improvement will indicate the relative contribution of field vs. genome to each outcome.</p>
+        <p class="pred-test"><strong>If false:</strong> Field features will not add predictive power beyond genomics. This would indicate that the field is downstream of genomic changes and not independently causal — compatible with a modified SMT.</p>
+        <p class="pred-evidence">Existing partial evidence: Immune contexture (a field property) outperforms mutational burden as a predictor of immunotherapy response in several tumor types [9]. Stromal gene signatures predict outcome independently of tumor cell genomics in breast cancer [19].</p>
+      </div>
+
+      <div class="pred-card reveal">
+        <div class="pred-num">4</div>
+        <div class="pred-title">Post-surgical field restoration reduces recurrence</div>
+        <p class="pred-body">Combining standard post-surgical adjuvant therapy with field restoration in the surgical bed (matrix softening, immune topology restoration, metabolic normalization) will reduce local recurrence compared to standard adjuvant therapy alone.</p>
+        <p class="pred-test"><strong>Test:</strong> Randomized trial in a cancer type with high local recurrence (e.g., glioblastoma, pancreatic adenocarcinoma, locally advanced breast cancer). Standard arm: surgery plus standard adjuvant therapy. Intervention arm: surgery plus standard adjuvant therapy plus field restoration protocol (local anti-fibrotic delivery, immune cell recruitment/spatial reorganization, vascular normalization). Primary endpoint: local recurrence rate at 3 and 5 years.</p>
+        <p class="pred-test"><strong>If true:</strong> Local recurrence will be reduced in the field-restoration arm, with the tissue bed showing normalized mechanical and immunological properties on post-treatment biopsy.</p>
+        <p class="pred-test"><strong>If false:</strong> Field restoration will not reduce recurrence, indicating that residual cancer cells overwhelm field correction. This would constrain the framework to prevention rather than treatment — a significant limitation but not a falsification.</p>
+        <p class="pred-evidence">Existing partial evidence: Jain's vascular normalization hypothesis demonstrated that normalizing tumor vasculature (a field property) improves chemotherapy delivery and outcomes [20]. This is field restoration applied to one dimension; the prediction extends it to the full field.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LIMITATIONS -->
+<div class="dark">
+  <div class="container-wide">
+    <div class="section-label reveal">Limitations</div>
+    <h2 class="reveal">Where The Framework Breaks</h2>
+    <div class="limits-grid">
+      <div class="limit-card reveal">
+        <div class="limit-title">Not Yet A Mathematical Formalism</div>
+        <p class="limit-body">Describing cellular behavior as geodesic motion through a tissue manifold is a heuristic. A true geometric theory would require defining a metric tensor over tissue states, demonstrating that cellular fate trajectories correspond to geodesics of that metric, and deriving predictions from the formalism that exceed what the verbal framework generates. This mathematical work has not been done. The framework is at the stage general relativity was in 1907 — the equivalence principle is articulated but the field equations are not written.</p>
+      </div>
+      <div class="limit-card reveal">
+        <div class="limit-title">Driver Mutations Can Dominate The Field</div>
+        <p class="limit-body">In some cancers — particularly hematologic malignancies with clear fusion oncogenes — a single genetic event is nearly sufficient to drive malignancy regardless of tissue context. The geometric framework applies most strongly to solid tumors arising in chronically deformed tissue fields and least strongly to cancers driven by catastrophic genetic events (chromothripsis, whole-genome doubling) in otherwise healthy tissue. The framework does not claim universality. It claims that the field contribution is larger than currently recognized and is the dominant factor in a substantial subset of cancers.</p>
+      </div>
+      <div class="limit-card reveal">
+        <div class="limit-title">The Stochastic Dimension Is Underspecified</div>
+        <p class="limit-body">Mutations are stochastic events. The geometric framework describes the deterministic landscape through which stochastic events propagate but does not formally integrate the stochastic and geometric descriptions. A complete theory would require something analogous to stochastic differential equations on a manifold — a mathematical framework that does not yet exist in this context.</p>
+      </div>
+      <div class="limit-card reveal">
+        <div class="limit-title">Prevention Trials Are Long and Expensive</div>
+        <p class="limit-body">The most consequential prediction (Prediction 2) requires a 10-year prospective trial. This is a practical barrier to validation, not a scientific one, but it means the framework cannot be rapidly confirmed or falsified through its strongest prediction. No regulatory framework currently exists for the endpoint "prevented a cancer that would have existed in eight years by softening the tissue it would have grown in." This is a structural barrier, not a scientific one.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- METHOD -->
+<section id="method">
+  <div class="container">
+    <div class="section-label reveal">Part IV — On Method</div>
+    <h2 class="reveal">Why Embodied Perspective-Taking Works</h2>
+    <p class="prose reveal">This framework was generated through a process that is itself worth examining.</p>
+    <p class="prose reveal">The method: a non-specialist directed a large language model (Claude, Anthropic) through a sequence of embodied perspective-taking exercises. Rather than querying the model for information about cancer biology, the model was asked to inhabit specific entities — a cancer cell, a collective of oncologists, a physicist, the extracellular matrix, a pre-malignant hepatocyte, a therapeutic intervention, the research funding landscape — and to generate from within each perspective.</p>
+    <p class="prose reveal">This method produced a synthesis that does not appear to exist in any single source in the training data. The individual components — TOFT, mechanobiology, evolutionary oncology, attractor models — are well-established. Their geometric unification, the specific framing of mutations as boundary conditions in a tissue manifold, the equivalence principle for oncology, and the inhabitation-derived insight that the cell experiences itself as following a gradient rather than making decisions — these emerged from the interaction between perspectives, not from any single perspective.</p>
+    <h3 class="reveal" style="margin-top:48px;">Why This Works</h3>
+    <p class="prose reveal">Large language models encode relationships between concepts across their training corpus. Standard prompting retrieves information along conventional associative pathways. Embodied perspective-taking forces the model to activate constraint sets — the physical constraints of being a matrix, the informational constraints of being a cell, the methodological constraints of being a physicist — that reorganize the associative landscape. Concepts that are distant in standard query space become adjacent when viewed from within a shared constraint set.</p>
+    <p class="prose reveal">The sequential inhabitation of multiple perspectives creates something analogous to triangulation: each perspective reveals aspects of the problem invisible from other perspectives, and the trajectory through perspective-space generates connections that no single perspective contains.</p>
+    <p class="prose reveal">This method is generalizable beyond cancer biology. Any domain characterized by siloed knowledge across disciplines — where the components of a synthesis exist but the synthesis itself does not — is a candidate for embodied perspective-taking. The human's role is not to provide domain expertise but to navigate the perspective space: choosing which entities to inhabit, in what sequence, and when to push the model past its default patterns.</p>
+    <p class="prose reveal">The human in this case had no training in cancer biology. What they had was an intuition for when a line of reasoning contained something important, and the willingness to direct the model toward it. This suggests that the method's power lies in the <em>navigation,</em> not the knowledge — and that non-specialists may be uniquely suited to it, precisely because they are not constrained by disciplinary conventions about which perspectives are legitimate.</p>
+  </div>
+</section>
+
+<!-- INVITATION -->
+<section id="invitation" class="pale-bg">
+  <div class="container" style="text-align:center;">
+    <div class="section-label reveal" style="justify-content:center;">Part V — An Invitation</div>
+    <h2 class="reveal">This Is Not A Finished Theory.</h2>
+    <p class="prose reveal" style="max-width:640px; margin:0 auto 32px;">It is a candidate framework — a proposed geometry that organizes existing observations and generates testable predictions. It was not designed. It was navigated. And it cannot evaluate itself.</p>
+
+    <div style="text-align:left; max-width:700px; margin:0 auto;">
+      <div class="method-step reveal">
+        <div class="step-num" style="color:rgba(200,98,42,0.35);">→</div>
+        <div>
+          <div class="step-label">Evaluation from cancer biologists, mechanobiologists, immunologists, and mathematical oncologists</div>
+          <p class="step-text">Are the claims consistent with experimental evidence? Where does the framework break? Which predictions are already addressed by existing data?</p>
+        </div>
+      </div>
+      <div class="method-step reveal">
+        <div class="step-num" style="color:rgba(200,98,42,0.35);">→</div>
+        <div>
+          <div class="step-label">Formalization from mathematicians and physicists</div>
+          <p class="step-text">Can the tissue-state manifold be rigorously defined? Can cellular fate trajectories be derived as geodesics? What is the correct mathematical structure — Riemannian geometry, stochastic dynamics on manifolds, information geometry, or something else?</p>
+        </div>
+      </div>
+      <div class="method-step reveal">
+        <div class="step-num" style="color:rgba(200,98,42,0.35);">→</div>
+        <div>
+          <div class="step-label">Testing from experimentalists</div>
+          <p class="step-text">The four predictions are designed to be testable with existing or near-term technology. Which is most tractable? Which would be most informative?</p>
+        </div>
+      </div>
+      <div class="method-step reveal">
+        <div class="step-num" style="color:rgba(200,98,42,0.35);">→</div>
+        <div>
+          <div class="step-label">Correction from everyone</div>
+          <p class="step-text">The framework was generated by a process that optimizes for coherence. Coherence is not truth. The most valuable response to this document is not agreement but specific identification of where it fails — which claims are contradicted by evidence I am not aware of, which mechanisms are more complex than presented, which predictions are already falsified.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout reveal" style="margin-top:48px; text-align:left; max-width:700px; margin-left:auto; margin-right:auto;">
+      <div class="callout-label">If you recognize your work in these pages</div>
+      <p>If you are one of the researchers whose decades of effort provided the components of this synthesis — I want to hear from you. Not because I can contribute to your research. Because I may have found a method that can help your work talk to each other in ways the current disciplinary structure makes difficult.<br><br>
+      The synthesis wants to exist. The components are all published. The connections are waiting to be formalized. This document is an attempt to show that the connections are there — generated by a novel method, presented by a non-specialist, offered in the hope that the right specialists will see what I saw and know what to do with it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REFERENCES -->
+<section>
+  <div class="container">
+    <div class="section-label reveal">References</div>
+    <div class="refs reveal">
+      <ol>
+        <li>Martincorena, I., et al. (2015). High burden and pervasive positive selection of somatic mutations in normal human skin. <em>Science,</em> 348(6237), 880–886.</li>
+        <li>Mintz, B., &amp; Illmensee, K. (1975). Normal genetically mosaic mice produced from malignant teratocarcinoma cells. <em>Proceedings of the National Academy of Sciences,</em> 72(9), 3585–3589.</li>
+        <li>Hynes, R. O. (2009). The extracellular matrix: not just pretty fibrils. <em>Science,</em> 326(5957), 1216–1219.</li>
+        <li>Dupont, S., et al. (2011). Role of YAP/TAZ in mechanotransduction. <em>Nature,</em> 474(7350), 179–183.</li>
+        <li>Panciera, T., et al. (2017). Mechanobiology of YAP and TAZ in physiology and disease. <em>Nature Reviews Molecular Cell Biology,</em> 18(12), 758–770.</li>
+        <li>Paszek, M. J., et al. (2005). Tensional homeostasis and the malignant phenotype. <em>Cancer Cell,</em> 8(3), 241–254.</li>
+        <li>Boyd, N. F., et al. (2007). Mammographic density and the risk and detection of breast cancer. <em>New England Journal of Medicine,</em> 356(3), 227–236.</li>
+        <li>Yizhak, K., et al. (2019). RNA sequence analysis reveals macroscopic somatic clonal expansion across normal tissues. <em>Science,</em> 364(6444), eaaw0726.</li>
+        <li>Galon, J., &amp; Bruni, D. (2019). Approaches to treat immune hot, altered and cold tumours with combination immunotherapies. <em>Nature Reviews Drug Discovery,</em> 18(3), 197–218.</li>
+        <li>Barker, H. E., et al. (2012). The rationale for targeting the LOX family in cancer. <em>Nature Reviews Cancer,</em> 12(8), 540–552.</li>
+        <li>Muir, A. J., et al. (2019). Simtuzumab for primary sclerosing cholangitis: phase 2 study results with insights on the natural history of the disease. <em>Hepatology,</em> 69(2), 684–698.</li>
+        <li>Sonnenschein, C., &amp; Soto, A. M. (2000). Somatic mutation theory of carcinogenesis: why it should be dropped and replaced. <em>Molecular Carcinogenesis,</em> 29(4), 205–211.</li>
+        <li>Huang, S., et al. (2005). Cell fates as high-dimensional attractor states of a complex gene regulatory network. <em>Physical Review Letters,</em> 94(12), 128701.</li>
+        <li>Merlo, L. M., et al. (2006). Cancer as an evolutionary and ecological process. <em>Nature Reviews Cancer,</em> 6(12), 924–935.</li>
+        <li>Davies, P. C., &amp; Lineweaver, C. H. (2011). Cancer tumors as Metazoa 1.0: tapping genes of ancient ancestors. <em>Physical Biology,</em> 8(1), 015001.</li>
+        <li>Singh, S., et al. (2013). Liver stiffness is associated with risk of decompensation, liver cancer, and death in patients with chronic liver diseases: a systematic review and meta-analysis. <em>Clinical Gastroenterology and Hepatology,</em> 11(12), 1573–1584.</li>
+        <li>Rothwell, P. M., et al. (2011). Effect of daily aspirin on long-term risk of death due to cancer. <em>The Lancet,</em> 377(9759), 31–41.</li>
+        <li>Singh, P. P., &amp; Singh, S. (2013). Statins are associated with reduced risk of gastric cancer: a systematic review and meta-analysis. <em>Annals of Oncology,</em> 24(7), 1721–1730.</li>
+        <li>Finak, G., et al. (2008). Stromal gene expression predicts clinical outcome in breast cancer. <em>Nature Medicine,</em> 14(5), 518–527.</li>
+        <li>Jain, R. K. (2005). Normalization of tumor vasculature: an emerging concept in antiangiogenic therapy. <em>Science,</em> 307(5706), 58–62.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">The Geometry of Malignancy</div>
+  <div class="footer-credit">
+    Generated through human-AI collaboration via embodied perspective-taking<br>
+    Clay (Last Name Unimportant) &times; Claude (Anthropic)<br>
+    Neither contributor could have produced this document independently.
+  </div>
+</footer>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), 60);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
