@@ -260,6 +260,9 @@ footer {
 }
 .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.1em; color: rgba(245,240,232,0.45); }
 .footer-credit { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.08em; line-height: 1.9; text-align: right; }
+.footer-contact { margin-top: 1.5rem; text-align: right; font-family: 'DM Mono', monospace; font-size: 0.75rem; }
+.footer-contact a { color: var(--cream); text-decoration: none; border-bottom: 1px solid rgba(245,240,232,0.3); }
+.footer-contact a:hover { border-bottom-color: var(--amber); }
 
 /* REVEAL */
 .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.75s ease, transform 0.75s ease; }
@@ -272,6 +275,7 @@ footer {
   .hero-inner, .hero-scroll, .opener-quote,
   .container, .container-wide, .insight-band, footer { padding-left: 24px; padding-right: 24px; }
   .footer-credit { text-align: left; }
+  .footer-contact { text-align: left; }
 }
 </style>
 </head>
@@ -287,6 +291,7 @@ footer {
     <li><a href="#predictions">Predictions</a></li>
     <li><a href="#method">Method</a></li>
     <li><a href="#invitation">Invitation</a></li>
+    <li><a href="mailto:clay@geometryofmalignancy.com">Contact</a></li>
   </ul>
 </nav>
 
@@ -807,6 +812,9 @@ footer {
     Clay (Last Name Unimportant) &times; Claude (Anthropic)<br>
     Neither contributor could have produced this document independently.
   </div>
+  <div class="footer-contact">
+    <a href="mailto:clay@geometryofmalignancy.com">clay@geometryofmalignancy.com</a>
+  </div>
 </footer>
 
 <script>
@@ -820,6 +828,12 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 reveals.forEach(el => observer.observe(el));
+</script>
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-g8Z3wG55quLqnfEgdcV54.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
 </script>
 </body>
 </html>

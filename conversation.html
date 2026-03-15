@@ -324,6 +324,7 @@ body {
 <!-- HERO -->
 <div class="conv-hero" id="top">
   <a href="index.html" class="back-link">Back to the essay</a>
+  <a href="mailto:clay@geometryofmalignancy.com" class="back-link" style="right:2rem;left:auto;">Contact</a>
   <div class="conv-hero-eyebrow">The unabridged transcript</div>
   <h1>The Full<br><span>Conversation</span></h1>
   <p class="conv-hero-sub">The dialogue between a human, an AI, a cancer cell, a dead physicist, and ten thousand oncologists that produced The Geometry of Malignancy.</p>
@@ -1109,6 +1110,9 @@ body {
 <div class="conv-footer">
   <div class="conv-footer-logo">The Geometry of Malignancy</div>
   <a href="index.html" class="conv-footer-link">← Read the essay</a>
+  <div class="conv-footer-contact" style="margin-top:1rem;font-family:'DM Mono',monospace;font-size:0.85rem;opacity:0.6;">
+    <a href="mailto:clay@geometryofmalignancy.com" style="color:var(--cream);text-decoration:none;border-bottom:1px solid rgba(245,240,232,0.3);">clay@geometryofmalignancy.com</a>
+  </div>
 </div>
 
 <script>
@@ -1133,6 +1137,12 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 reveals.forEach(el => observer.observe(el));
+</script>
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-g8Z3wG55quLqnfEgdcV54.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
 </script>
 </body>
 </html>
