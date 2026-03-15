@@ -87,7 +87,7 @@ nav {
 }
 .hero-title span { display: block; color: var(--amber); }
 .hero-sub {
-  font-size: clamp(1rem, 1.8vw, 1.3rem); font-style: italic; font-weight: 400;
+  font-size: clamp(1rem, 1.8vw, 1.3rem); font-style: italic; font-weight: 500;
   color: var(--mid); max-width: 560px; line-height: 1.75; margin-top: 28px;
   opacity: 0; animation: fadeUp 0.9s ease 0.6s forwards;
 }
@@ -135,7 +135,7 @@ h3 {
 
 .prose {
   font-size: clamp(1.125rem, 1.5vw, 1.305rem); line-height: 1.9;
-  font-weight: 400; color: #3d3020;
+  font-weight: 500; color: #3d3020;
 }
 .dark .prose { color: rgba(245,240,232,0.78); }
 .prose + .prose { margin-top: 18px; }
@@ -143,7 +143,7 @@ h3 {
 .dark .prose em { color: var(--gold); }
 
 blockquote {
-  font-size: clamp(1.175rem, 1.9vw, 1.475rem); font-style: italic; font-weight: 400;
+  font-size: clamp(1.175rem, 1.9vw, 1.475rem); font-style: italic; font-weight: 500;
   line-height: 1.8; border-left: 2px solid var(--amber);
   padding-left: 28px; margin: 32px 0;
 }
@@ -151,7 +151,7 @@ blockquote {
 blockquote em { font-style: normal; color: var(--gold); }
 
 .pull-quote {
-  font-size: clamp(1.425rem, 2.6vw, 2.025rem); font-style: italic; font-weight: 400;
+  font-size: clamp(1.425rem, 2.6vw, 2.025rem); font-style: italic; font-weight: 500;
   line-height: 1.65; text-align: center; max-width: 780px; margin: 0 auto;
   position: relative; z-index: 1;
 }
@@ -193,12 +193,12 @@ blockquote em { font-style: normal; color: var(--gold); }
 .stage:hover { background: rgba(200,98,42,0.1); border-top-color: var(--amber); }
 .stage-num { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: rgba(255,255,255,0.07); line-height: 1; margin-bottom: 12px; }
 .stage-name { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
-.stage-desc { font-size: 1.075rem; font-style: italic; font-weight: 400; line-height: 1.65; color: rgba(245,240,232,0.6); }
+.stage-desc { font-size: 1.075rem; font-style: italic; font-weight: 500; line-height: 1.65; color: rgba(245,240,232,0.6); }
 
 /* CALLOUT */
 .callout { background: var(--ghost); border: 1px solid rgba(200,98,42,0.2); padding: 40px; margin-bottom: 20px; }
 .callout-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; }
-.callout p { font-size: 1.125rem; line-height: 1.78; font-weight: 400; color: #3d3020; }
+.callout p { font-size: 1.125rem; line-height: 1.78; font-weight: 500; color: #3d3020; }
 .dark .callout { background: rgba(255,255,255,0.04); border-color: rgba(212,168,67,0.25); }
 .dark .callout-label { color: var(--gold); }
 .dark .callout p { color: rgba(245,240,232,0.72); }
@@ -209,7 +209,7 @@ blockquote em { font-style: normal; color: var(--gold); }
 .pred-card:hover { transform: translateY(-4px); }
 .pred-num { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: rgba(200,98,42,0.11); line-height: 1; margin-bottom: 4px; }
 .pred-title { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; }
-.pred-body { font-size: 1.095rem; line-height: 1.78; font-weight: 400; color: #3d3020; }
+.pred-body { font-size: 1.095rem; line-height: 1.78; font-weight: 500; color: #3d3020; }
 .pred-test { margin-top: 14px; font-size: 1.025rem; font-style: italic; color: var(--mid); line-height: 1.7; }
 .pred-evidence { margin-top: 10px; font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; color: var(--light-mid); line-height: 1.7; }
 
@@ -217,7 +217,7 @@ blockquote em { font-style: normal; color: var(--gold); }
 .limits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2px; margin-top: 48px; }
 .limit-card { background: rgba(255,255,255,0.03); border-top: 2px solid rgba(200,98,42,0.3); padding: 36px 32px; }
 .limit-title { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
-.limit-body { font-size: 1.095rem; line-height: 1.75; font-weight: 400; color: rgba(245,240,232,0.65); }
+.limit-body { font-size: 1.095rem; line-height: 1.75; font-weight: 500; color: rgba(245,240,232,0.65); }
 
 /* INSIGHT BAND */
 .insight-band { padding: 110px 60px; text-align: center; position: relative; overflow: hidden; }
@@ -230,21 +230,21 @@ blockquote em { font-style: normal; color: var(--gold); }
 .theory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2px; margin-top: 48px; }
 .theory-card { background: var(--ghost); border-left: 3px solid var(--amber); padding: 32px 28px; }
 .theory-name { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber); margin-bottom: 12px; }
-.theory-body { font-size: 1.095rem; line-height: 1.78; font-weight: 400; color: #3d3020; }
+.theory-body { font-size: 1.095rem; line-height: 1.78; font-weight: 500; color: #3d3020; }
 
 /* STEPS */
 .method-steps { counter-reset: steps; margin-top: 40px; }
 .method-step { display: grid; grid-template-columns: auto 1fr; gap: 28px; padding: 28px 0; border-bottom: 1px solid rgba(26,18,8,0.08); align-items: start; }
 .dark .method-step { border-bottom-color: rgba(245,240,232,0.08); }
 .step-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: rgba(200,98,42,0.25); line-height: 1; width: 50px; flex-shrink: 0; }
-.step-text { font-size: 1.125rem; line-height: 1.8; font-weight: 400; color: #3d3020; padding-top: 6px; }
+.step-text { font-size: 1.125rem; line-height: 1.8; font-weight: 500; color: #3d3020; padding-top: 6px; }
 .dark .step-text { color: rgba(245,240,232,0.72); }
 .step-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; }
 .dark .step-label { color: var(--gold); }
 
 /* REFS */
 .refs { margin-top: 40px; border-top: 1px solid rgba(26,18,8,0.12); padding-top: 32px; }
-.refs h3 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--mid); margin-bottom: 16px; font-weight: 400; }
+.refs h3 { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--mid); margin-bottom: 16px; font-weight: 500; }
 .refs ol { list-style: decimal; padding-left: 20px; }
 .refs li { font-family: 'DM Mono', monospace; font-size: 0.7rem; line-height: 1.9; color: var(--mid); letter-spacing: 0.02em; }
 .refs li em { font-style: italic; }
